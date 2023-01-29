@@ -14,7 +14,7 @@ class DSString
 {
 
 private:
-    int len;    // the length of the string
+    size_t len;    // the length of the string
     char *data; // a pointer to a character array containing the string with a `\0` terminator
     // Note: we keep the terminator only so we can return a c-string version in function c_str().
 
@@ -26,18 +26,18 @@ public:
 
     DSString();
     DSString(const char *); // constructor that converts a cstring
-    // you can also provide  DSString(const string &); for std::string
+    DSString(const std::string &); // you can also provide  DSString(const string &); for std::string
 
     // rule-of-three
     DSString(const DSString &);            // copy constructor
     ~DSString();                           // destructor
-    DSString &operator=(const DSString &); // assignment operator
+    DSString& operator=(const DSString &); // assignment operator
 
     // you can also implement the move versions for the big 5 (C+11)
 
-    int length() const; // returns the length of the string
+    size_t length() const; // returns the length of the string
 
-    DSString &operator[](int); // returns a reference to the character at the given index
+    char& operator[](size_t); // returns a reference to the character at the given index
 
     /**
      * Overloaded operator+ which appends the string in the argument to this string
@@ -77,6 +77,7 @@ public:
     char *c_str() const;
 
     // a conversion to std::string would be nice: string string();
+    std::string string() const;
 
     /**
      * Overloaded stream insertion operator to print the contents of this
