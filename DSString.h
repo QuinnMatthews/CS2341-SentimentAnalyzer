@@ -14,30 +14,28 @@ class DSString
 {
 
 private:
-    size_t len;    // the length of the string
-    char *data; // a pointer to a character array containing the string with a `\0` terminator
+    size_t len;     // the length of the string
+    char *data;     // a pointer to a character array containing the string with a `\0` terminator
     // Note: we keep the terminator only so we can return a c-string version in function c_str().
 
 public:
-    /**
-     * Make sure you implement the rule-of-three and use proper memory management.
-     * To help you get started, you can implement the following:
-     **/
-
     DSString();
-    DSString(const char *); // constructor that converts a cstring
-    DSString(const std::string &); // you can also provide  DSString(const string &); for std::string
+    DSString(const char *);         // constructor that converts a cstring
+    DSString(const std::string &);  // constructor that converts a std::string
 
-    // rule-of-three
+    // rule-of-five
     DSString(const DSString &);            // copy constructor
+    DSString(DSString &&);                 // move constructor
     ~DSString();                           // destructor
     DSString& operator=(const DSString &); // assignment operator
+    DSString& operator=(DSString &&);      // move assignment operator
 
-    // you can also implement the move versions for the big 5 (C+11)
 
     size_t length() const; // returns the length of the string
 
-    char& operator[](size_t); // returns a reference to the character at the given index
+
+    char& operator[](size_t);  // returns a reference to the character at the given index
+    char& at(size_t);    // returns a reference to the character at the given index with bounds checking
 
     /**
      * Overloaded operator+ which appends the string in the argument to this string
@@ -45,19 +43,27 @@ public:
     DSString operator+(const DSString &) const;
 
     /**
-     * Standard relational operators to compare and order your strings.
-     * Feel free to add additional.
-     **/
-    bool operator==(const DSString &) const;
-    bool operator<(const DSString &) const;
+     * Overloaded operator+= which appends the string in the argument to this string
+     */
+    DSString& operator+=(const DSString &);
 
     /**
-     * The substring method returns a new string object that contains a
-     * sequence of characters from this string object.
+     * Overloaded operators for comparison
+     */
+    bool operator==(const DSString &) const;
+    bool operator<(const DSString &) const;
+    bool operator>(const DSString &) const;
+    bool operator<=(const DSString &) const;
+    bool operator>=(const DSString &) const;
+    bool operator!=(const DSString &) const;
+
+
+    /**
+     * @brief Returns a new string object that contains a sequence of characters from this string object.
      *
-     * param start - the index of where to start
-     * param numChars - the number (count) of characters to copy into
-     *    the substring
+     * @param start the index of where to start
+     * @param numChars the number (count) of characters to copy into the substring
+     * 
      * @return a DSString object containing the requested substring
      **/
     DSString substring(size_t start, size_t numChars) const;
@@ -67,17 +73,24 @@ public:
      *
      * @return DSString
      */
-    DSString toLower() const; // look at the ASCII table for this!
+    DSString toLower() const;
+
 
     /**
-     * the c_str function returns a pointer a null-terminated c-string holding the
-     * contents of this object. Since data already has a `\0`
-     * at the end of the string in DSString so you can just return a pointer to data.
-     **/
-    char *c_str() const;
+     * @brief Returns a pointer to a null-terminated c-string holding the contents of this object
+     * 
+     * @return char*
+    */
+    char* c_str() const;
 
-    // a conversion to std::string would be nice: string string();
+
+    /**
+     * @brief Returns a std::string object with the same contents as this DSString
+     * 
+     * @return std::string 
+     */
     std::string string() const;
+
 
     /**
      * Overloaded stream insertion operator to print the contents of this
@@ -87,9 +100,41 @@ public:
     friend std::ostream &operator<<(std::ostream &, const DSString &);
     friend std::istream &operator>>(std::istream &in, DSString &c);
 
-    // You are free to add more functionality to the class.  For example,
-    // you may want to add a find(...) function that will search for a
-    // substring within a string or a function that breaks a string into words.
+
+    /**
+     * @brief Finds the first occurrence of the given substring
+     * 
+     * @param str The substring to search for
+     * @param start The index to start searching from
+     * @return size_t The index of the first occurrence of the substring or npos if not found
+     * 
+    */
+    size_t find (const DSString&, size_t start = 0);
+
+    /**
+     * @brief Finds the first occurrence of the given substring
+     * 
+     * @param str The cstring to search for (must be null terminated)
+     * @param start The index to start searching from
+     * @return size_t The index of the first occurrence of the substring or npos if not found
+     * 
+    */
+    size_t find (const char*, size_t start = 0);
+
+    /**
+     * @brief Finds the first occurrence of the given character
+     * 
+     * @param c The character to search for
+     * @param start The index to start searching from
+     * @return size_t The index of the first occurrence of the char or npos if not found
+     * 
+    */
+    size_t find (char, size_t start = 0);
+
+
+    //Constant to represent the maximum size of a string
+    //Also used to represent that no match was found
+    static const size_t npos = -1;
 };
 
 #endif

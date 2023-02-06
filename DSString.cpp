@@ -1,18 +1,5 @@
 #include "DSString.h"
 
-/* 
- * Implement the functions defined in DSString.h. You may add more functions as needed
- * for the project. 
- *
- * Note that c-strings use `\0` as a terminator symbol
- * but your class should store its length in a member variable. Do not use c-string functions 
- * from <string.h> or <cstring> other than for conversion from a c-sting.
- */  
-
-    /**
-     * Make sure you implement the rule-of-three and use proper memory management.
-     * To help you get started, you can implement the following:
-     **/
     DSString::DSString() {
         len = 0;
         data = new char[1];
@@ -38,7 +25,8 @@
         //Add null terminator
         data[len] = '\0';
     }
-    // you can also provide  DSString(const string &); for std::string
+
+    //constructor that converts a std::string
     DSString::DSString(const std::string& str) {
         len = str.length();
         data = new char[len + 1];
@@ -51,8 +39,6 @@
         //Add null terminator
         data[len] = '\0';
     }
-
-    // rule-of-three
     
     // copy constructor
     DSString::DSString(const DSString& cpyFrm) {
@@ -68,13 +54,23 @@
         data[len] = '\0';
     }
 
-    // destructor
+    //Move constructor
+    DSString::DSString(DSString&& moveFrm) {
+        len = moveFrm.len;
+        data = moveFrm.data;
+
+        moveFrm.data = nullptr;
+        moveFrm.len = 0;
+    }
+
+
+    //destructor
     DSString::~DSString() {
         //Clean up char array
         delete[] data;
     }   
 
-    // assignment operator                       
+    //assignment operator                       
     DSString& DSString::operator=(const DSString& cpyFrm) {
         //Clean up old data
         delete data;
@@ -92,7 +88,20 @@
         
         return *this;
     } 
-    //TODO: you can also implement the move versions for the big 5 (C+11)
+
+    // move assignment operator
+    DSString& DSString::operator=(DSString&& moveFrm) {
+        //Clean up old data
+        delete data;
+
+        len = moveFrm.len;
+        data = moveFrm.data;
+
+        moveFrm.data = nullptr;
+        moveFrm.len = 0;
+
+        return *this;
+    }
 
     /**
      * @brief returns the length of the string
@@ -107,6 +116,15 @@
     char& DSString::operator[](size_t index) {
         return data[index];
     } 
+
+    // returns a reference to the char at the given index and includes bounds checking
+    char& DSString::at(size_t index) {
+        if(index >= len){
+            throw std::out_of_range("Index out of range");
+        }
+
+        return data[index];
+    }
 
     /**
      * Overloaded operator+ which appends the string in the argument to this string
@@ -165,6 +183,54 @@
 
         //If the strings are not equal, return true if this string is shorter
         return len < rhs.len;
+    }
+
+    bool DSString::operator>(const DSString& rhs) const {
+        for(size_t i = 0; i < len && i < rhs.len; i++){
+            if(data[i] > rhs.data[i]) {
+                return true;
+            } else if(data[i] < rhs.data[i]) {
+                return false;
+            }
+        }
+
+        //If we get here, all chars are equal up to the length of the shorter string
+        //If the strings are equal, return false
+        if(len == rhs.len) {
+            return false;
+        }
+
+        //If the strings are not equal, return true if this string is longer
+        return len > rhs.len;
+    }
+
+    bool DSString::operator!=(const DSString& rhs) const {
+        //check if lengths are equal
+        if(len != rhs.len){
+            //if lengths are not equal, strings are not equal
+            return true;
+        }
+
+        //Loop through each char and compare
+        for(size_t i = 0; i < len; i++){
+            if(data[i] != rhs.data[i]){
+                //if any char is not equal we can return true
+                return true;
+            }
+        }
+
+        //All chars are equal
+        return false;
+    }
+
+    bool DSString::operator<=(const DSString& rhs) const {
+        //TODO: This would probably be more efficient if we checked this ourselves
+        return this->operator<(rhs) || this->operator==(rhs);
+    }
+
+    bool DSString::operator>=(const DSString& rhs) const {
+        //TODO: This would probably be more efficient if we checked this ourselves
+        return this->operator>(rhs) || this->operator==(rhs);
     }
 
     /**
@@ -244,11 +310,17 @@
 
         return out;
     }
+
     /**
      *  Overload the stream extraction operator to read a string from the input stream.
     */
     std::istream& operator>>(std::istream& in, DSString& dsstr) {
+        //Clean up old data
+        delete[] dsstr.data;
+        dsstr.len = 0;
+
         char* newData;
+    
         //TODO: read in the string from the input stream
         return in;
     }
@@ -256,3 +328,113 @@
     // You are free to add more functionality to the class.  For example,
     // you may want to add a find(...) function that will search for a
     // substring within a string or a function that breaks a string into words.
+
+    /**
+     * @brief Finds the first occurrence of the given substring
+     * 
+     * @param substr The string to search for
+     * @param start The index to start searching from
+     * @return size_t The index of the first occurrence of the substring or npos if not found
+    */
+    size_t DSString::find (const DSString& substr, size_t start) {
+        //validate start index
+        if(start >= len){
+            throw std::out_of_range("Start index out of range");
+        }
+        //validate substring length
+        if(substr.len + start > len){
+            throw std::out_of_range("Substring length out of range");
+        }
+
+        //Loop through each character in this string
+        for(size_t i = start; i < len; i++){
+            //Check if the current character matches the first character of the substring
+            if(data[i] == substr.data[0]){
+                //Loop through each character in the substring
+                for(size_t j = 0; j < substr.len; j++){
+                    //Check if the current character in the substring matches the current character in this string
+                    if(data[i + j] != substr.data[j]){
+                        //If the characters don't match, break out of the loop
+                        break;
+                    } else if(j == substr.len - 1){
+                        //If we get here, all characters in the substring matched
+                        //Return the index of the first character in the substring
+                        return i;
+                    }
+                }
+            }
+        }
+
+        //Substring not found, return npos
+        return npos;
+    }
+
+    /**
+     * @brief Finds the first occurrence of the given substring
+     * 
+     * @param substr The cstring to search for (must be null terminated)
+     * @param start The index to start searching from
+     * @returns The index of the first character in the substring, or npos if the substring is not found
+    */
+    size_t DSString::find (const char* substr, size_t start) {
+        //Validate start index
+        if(start >= len){
+            throw std::out_of_range("Start index out of range");
+        }
+        //Determine length of substring
+        size_t substrLen = 0;
+        while(substr[substrLen] != '\0'){
+            substrLen++;
+        }
+        //Validate substring length
+        if(substrLen + start > len){
+            throw std::out_of_range("Substring length out of range");
+        }
+
+        //Loop through each character in this string
+        for(size_t i = start; i < len; i++){
+            //Check if the current character matches the first character of the substring
+            if(data[i] == substr[0]){
+                //Loop through each character in the substring
+                for(size_t j = 0; j < substrLen; j++){
+                    //Check if the current character in the substring matches the current character in this string
+                    if(data[i + j] != substr[j]){
+                        //If the characters don't match, break out of the loop
+                        break;
+                    } else if(j == substrLen - 1){
+                        //If we get here, all characters in the substring matched
+                        //Return the index of the first character in the substring
+                        return i;
+                    }
+                }
+            }
+        }
+
+        //Substring not found, return npos
+        return npos;
+    }
+
+    /**
+     * @brief Finds the first occurrence of the given substring
+     * 
+     * @param c The character to search for
+     * @param start The index to start searching from
+    */
+    size_t DSString::find (char c, size_t start) {
+        //Validate start index
+        if(start >= len){
+            throw std::out_of_range("Start index out of range");
+        }
+
+        //Loop through each character in this string
+        for(size_t i = start; i < len; i++){
+            //Check if the current character matches the given character
+            if(data[i] == c){
+                //Return the index of the character
+                return i;
+            }
+        }
+
+        //Character not found, return npos
+        return npos;
+    }
