@@ -264,6 +264,33 @@
         return newstr;
     }
 
+    void DSString::remove(size_t index) {
+        //verify that index is valid
+        if(index > len) {
+            throw std::out_of_range("Index out of range");
+        }
+
+        //Create new char[] 1 shorter than the old (still need room for null terminator)
+        char* newdata = new char[len];
+
+        size_t j = 0;
+        for(size_t i = 0; i < len; i++) {
+            if(i != index) {
+                newdata[j] = data[i];
+                j++;
+            }
+        }
+
+        //Clean up old data
+        delete[] data;
+        data = newdata;
+        len = len - 1;
+        
+        //Add null terminator
+        data[len] = '\0';
+
+    }
+
     /**
      * @brief Returns a new string object with all characters in lowercase
      *

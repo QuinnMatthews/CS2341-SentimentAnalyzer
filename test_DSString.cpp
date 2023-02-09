@@ -65,5 +65,9 @@ int main()
     getline(ss3, inputString4, ';');
     cout << inputString4 << endl;
 
+    DSString removeChar = "Hello: World";
+    removeChar.remove(5);
+    cout << removeChar << endl;
+
     return 0;
 }

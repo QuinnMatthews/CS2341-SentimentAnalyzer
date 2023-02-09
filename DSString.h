@@ -69,6 +69,13 @@ public:
     DSString substring(size_t start, size_t numChars) const;
 
     /**
+     * @brief Remove the char at the specified index
+     * 
+     * @param index of the char to remove
+     */
+    void remove(size_t index);
+
+    /**
      * @brief Returns a new string object with all characters in lowercase
      *
      * @return DSString
