@@ -97,8 +97,11 @@ public:
      * string to the output stream in the first argument. Overload the stream
      * extraction operator to read a string from the input stream.
      **/
-    friend std::ostream &operator<<(std::ostream &, const DSString &);
-    friend std::istream &operator>>(std::istream &in, DSString &c);
+    friend std::ostream &operator<<(std::ostream &in, const DSString &str);
+    friend std::istream &operator>>(std::istream &in, DSString &str);
+    friend std::istream &getline(std::istream &in, DSString &str, char delim);
+    friend std::istream &getline(std::istream &in, DSString &str);
+    
 
 
     /**

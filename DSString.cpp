@@ -368,6 +368,106 @@
         return in;
     }
 
+    std::istream& getline(std::istream& in, DSString& dsstr) {
+        //Clean up old data
+        delete[] dsstr.data;
+        dsstr.len = 0;
+        
+        size_t tmpLen = 5; // Length of the newData char[], scales exponentially to minimize copying
+        char* newData = new char[tmpLen];
+
+        char tmpchar; // Holds each char from the input buffer
+
+        //Read in each char from the input buffer until we hit a newline
+        while(in.get(tmpchar) && tmpchar != '\n')
+        {
+            dsstr.len++; // Holds the actual length of the data that's been read in
+
+            //Scale if needed
+            if(dsstr.len > tmpLen) {
+                //Expand char[]
+                tmpLen = tmpLen * 2;
+                char* tmpData = new char[tmpLen];
+
+                //Copy data from old/shorter char[] to new/longer char[]
+                for(size_t i = 0; i < dsstr.len - 1; i++) {
+                    tmpData[i] = newData[i];
+                }
+
+                //delete old char[]
+                delete[] newData;
+                newData = nullptr;
+
+                //Set newData equal to tmpData
+                newData = tmpData;
+            }
+
+            newData[dsstr.len - 1] = tmpchar;
+        }
+
+        //Create an appropriatly sized new array
+        dsstr.data = new char[dsstr.len + 1];
+        for(size_t i = 0; i < dsstr.len; i++) {
+            dsstr.data[i] = newData[i];
+        }
+        //Add null terminator
+        dsstr.data[dsstr.len] = '\0';
+        //Clean up memory
+        delete[] newData;
+
+        return in;
+    }
+    
+    std::istream& getline(std::istream& in, DSString& dsstr, char delim) {
+        //Clean up old data
+        delete[] dsstr.data;
+        dsstr.len = 0;
+        
+        size_t tmpLen = 5; // Length of the newData char[], scales exponentially to minimize copying
+        char* newData = new char[tmpLen];
+
+        char tmpchar; // Holds each char from the input buffer
+
+        //Read in each char from the input buffer until we hit a newline
+        while(in.get(tmpchar) && tmpchar != delim)
+        {
+            dsstr.len++; // Holds the actual length of the data that's been read in
+
+            //Scale if needed
+            if(dsstr.len > tmpLen) {
+                //Expand char[]
+                tmpLen = tmpLen * 2;
+                char* tmpData = new char[tmpLen];
+
+                //Copy data from old/shorter char[] to new/longer char[]
+                for(size_t i = 0; i < dsstr.len - 1; i++) {
+                    tmpData[i] = newData[i];
+                }
+
+                //delete old char[]
+                delete[] newData;
+                newData = nullptr;
+
+                //Set newData equal to tmpData
+                newData = tmpData;
+            }
+
+            newData[dsstr.len - 1] = tmpchar;
+        }
+
+        //Create an appropriatly sized new array
+        dsstr.data = new char[dsstr.len + 1];
+        for(size_t i = 0; i < dsstr.len; i++) {
+            dsstr.data[i] = newData[i];
+        }
+        //Add null terminator
+        dsstr.data[dsstr.len] = '\0';
+        //Clean up memory
+        delete[] newData;
+
+        return in;
+    }
+
     /**
      * @brief Finds the first occurrence of the given substring
      * 
