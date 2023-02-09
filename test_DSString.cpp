@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
+#include <sstream>
 #include "DSString.h"
 
 using namespace std;
@@ -49,6 +49,11 @@ int main()
     // now we can do more efficient search
     cout << "found ddd: " << binary_search(strings.begin(), strings.end(), DSString("ddd")) << endl;
     cout << "found zzz: " << binary_search(strings.begin(), strings.end(), DSString("zzz")) << endl;
+
+    stringstream ss("Test Streams");
+    DSString inputdString, inputdString2;
+    ss >> inputdString >> inputdString2;
+    cout << inputdString << '\n' << inputdString2 << endl;
 
     return 0;
 }

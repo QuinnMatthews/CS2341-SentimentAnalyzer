@@ -92,7 +92,7 @@
     // move assignment operator
     DSString& DSString::operator=(DSString&& moveFrm) {
         //Clean up old data
-        delete data;
+        delete[] data;
 
         len = moveFrm.len;
         data = moveFrm.data;
@@ -144,10 +144,6 @@
         return DSString(newData);
     }
 
-    /**
-     * Standard relational operators to compare and order your strings.
-     * TODO: Feel free to add additional.
-     **/
     bool DSString::operator==(const DSString& rhs) const {
         //verify lengths are equal
         if(len != rhs.len){
@@ -257,7 +253,15 @@
 
         //Add null terminator
         newData[numChars] = '\0';
-        return DSString(newData);
+
+        //Create new DSString object
+        DSString newstr = DSString(newData);
+
+        //Clean up memory
+        delete[] newData;
+
+        //Return the new DSString
+        return newstr;
     }
 
     /**
@@ -318,16 +322,51 @@
         //Clean up old data
         delete[] dsstr.data;
         dsstr.len = 0;
+        
+        size_t tmpLen = 5; // Length of the newData char[], scales exponentially to minimize copying
+        char* newData = new char[tmpLen];
 
-        char* newData;
-    
-        //TODO: read in the string from the input stream
+        char tmpchar; // Holds each char from the input buffer
+
+        //Read in each char from the input buffer until we hit a space or newline
+        while(in.get(tmpchar) && tmpchar != ' ' && tmpchar != '\n')
+        {
+            dsstr.len++; //Holds the actual length of the data that's been read in
+
+            //Scale if needed
+            if(dsstr.len > tmpLen) {
+                //Expand char[]
+                tmpLen = tmpLen * 2;
+                char* tmpData = new char[tmpLen];
+
+                //Copy data from old/shorter char[] to new/longer char[]
+                for(size_t i = 0; i < dsstr.len - 1; i++) {
+                    tmpData[i] = newData[i];
+                }
+
+                //delete old char[]
+                delete[] newData;
+                newData = nullptr;
+
+                //Set newData equal to tmpData
+                newData = tmpData;
+            }
+
+            newData[dsstr.len - 1] = tmpchar;
+        }
+
+        //Create an appropriatly sized new array
+        dsstr.data = new char[dsstr.len + 1];
+        for(size_t i = 0; i < dsstr.len; i++) {
+            dsstr.data[i] = newData[i];
+        }
+        //Add null terminator
+        dsstr.data[dsstr.len] = '\0';
+        //Clean up memory
+        delete[] newData;
+
         return in;
     }
-
-    // You are free to add more functionality to the class.  For example,
-    // you may want to add a find(...) function that will search for a
-    // substring within a string or a function that breaks a string into words.
 
     /**
      * @brief Finds the first occurrence of the given substring
