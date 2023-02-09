@@ -55,5 +55,15 @@ int main()
     ss >> inputdString >> inputdString2;
     cout << inputdString << '\n' << inputdString2 << endl;
 
+    stringstream ss2("Test Stream with spaces using getline");
+    DSString inputString3;
+    getline(ss2, inputString3);
+    cout << inputString3 << endl;
+
+    stringstream ss3("Test Stream with spaces using getline and delimiter;abcdefg");
+    DSString inputString4;
+    getline(ss3, inputString4, ';');
+    cout << inputString4 << endl;
+
     return 0;
 }
