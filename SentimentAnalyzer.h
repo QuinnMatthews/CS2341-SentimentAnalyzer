@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include <iostream>
 #include "Token.h"
 #include "Tweet.h"
@@ -9,7 +10,7 @@
 class SentimentAnalyzer
 {
     private:
-        std::vector<Token> trainingTokens;
+        std::set<Token> trainingTokens;
         std::vector<Tweet> tweets;
     public:
         void train(std::istream&);
