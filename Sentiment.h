@@ -1,22 +1,22 @@
 #include <vector>
 #include "DSString.h"
 
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef SENTIMENT_H
+#define SENTIMENT_H
 
 enum Sentiment {POSTIVE, NEGATIVE, NUETRAL};
 
-class Token
+class SentimentValue
 {
     private:
-        DSString value;
         unsigned int posCount;
         unsigned int negCount;
     public:
-        Token(DSString);
+        SentimentValue();
+        SentimentValue(Sentiment);
         void addTrainingData(Sentiment);
         Sentiment getSentiment();
-        double getConfidence();
+        double getConfidence(int c);
 };
 
 #endif

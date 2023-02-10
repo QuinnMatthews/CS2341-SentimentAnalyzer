@@ -1,8 +1,9 @@
 #include <vector>
-#include <set>
+#include <map>
 #include <iostream>
-#include "Token.h"
-#include "Tweet.h"
+#include <sstream>
+#include "DSString.h"
+#include "Sentiment.h"
 
 #ifndef SENTIMENTANALYZER_H
 #define SENTIMENTANALYZER_H
@@ -10,8 +11,9 @@
 class SentimentAnalyzer
 {
     private:
-        std::set<Token> trainingTokens;
-        std::vector<Tweet> tweets;
+        std::map<DSString, SentimentValue> trainingTokens; //<TokenString, SentimentValue>
+        size_t trainingTokenCount; //Total number of tokens that have been read in
+        std::map<DSString, Sentiment> tweets; //<TweetID, PredictedTweetSentiment>
     public:
         void train(std::istream&);
         void predict(std::istream&);
