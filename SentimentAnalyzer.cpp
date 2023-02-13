@@ -47,6 +47,11 @@ void SentimentAnalyzer::train(std::istream& trainingData)
             trainingTokenCount++;
         }
     }
+    for(auto TrainingToken : trainingTokens) {
+        if(TrainingToken.second.getSentiment() == POSTIVE) {
+            std::cout << TrainingToken.first << '\n';
+        }
+    }
 
     std::cout << "Training... Done" << std::endl;
     std::cout << "Total Number of Training Tokens: " << trainingTokenCount 
@@ -202,6 +207,16 @@ DSString SentimentAnalyzer::tokenizeWord(DSString tokenstr) {
         {
             tokenstr.remove(i);
             i--;
+        }
+    }
+
+    //Reduce duplicate letters
+    for (size_t i = 2; i < tokenstr.length(); i++)
+    { 
+        if(i > 1 && tokenstr.at(i) == tokenstr.at(i-1) && tokenstr.at(i-1) == tokenstr.at(i-2)) {
+                tokenstr.remove(i);
+                tokenstr.remove(i-1);
+                i-=2;
         }
     }
     

@@ -25,7 +25,9 @@ void SentimentValue::addTrainingData(Sentiment s) {
 
 Sentiment SentimentValue::getSentiment() {
     //Check if postive count and negative count are close
-    const double minDeviation = 0.02; //Required deviation to not be nuetral
+    double minDeviation; //Required deviation to not be nuetral
+    const int totalCount = posCount + negCount;
+    minDeviation = 0.15;
 
     //Divide by 0 error shouldn't be possible since SentimentValue will always be initialized with a sentiment
     const double posPercent = (double) posCount / (posCount + negCount);
