@@ -120,7 +120,6 @@ void SentimentAnalyzer::predict(std::istream& tweetStream) {
             } else {
                 tweets.insert(std::pair<DSString, Sentiment>(id, POSTIVE));
             }
-            std::cout << "Nuetral: " << id << "(" << Tweet.at(0)<< "):\n"<< Tweet << '\n' << std::endl;
         }
     }
     std::cout << "Predicting... Done" << std::endl;
