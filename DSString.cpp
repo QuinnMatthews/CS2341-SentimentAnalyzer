@@ -554,7 +554,7 @@
         }
         //Validate substring length
         if(substrLen + start > len){
-            throw std::out_of_range("Substring length out of range");
+            return npos;
         }
 
         //Loop through each character in this string
