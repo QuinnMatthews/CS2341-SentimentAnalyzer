@@ -5,6 +5,8 @@
 
 using namespace std;
 
+ifstream openFile(DSString filename);
+
 int main(int argc, char** argv)
 {  
     DSString trainingDataset, testDataset, testDatasetTruth;
@@ -24,67 +26,29 @@ int main(int argc, char** argv)
 
     SentimentAnalyzer analyzer = SentimentAnalyzer();
 
-    /*
-    * ---------------------
-    * ------Training-------
-    * ---------------------
-    */
-
-    //Open training dataset
-    ifstream trainDataStream;
-    trainDataStream.open(trainingDataset.c_str());
-
-    //Verify file is open
-    if(!trainDataStream.is_open()) {
-        throw runtime_error("Unable to open File 1");
-    } else {
-        cout << "File 1 Opened" << endl;
-    }
-
+    //Train
+    ifstream trainDataStream = openFile(trainingDataset);
     analyzer.train(trainDataStream);
-    cout << "Training Complete" << endl;
-
     trainDataStream.close();
 
-    /*
-    * ---------------------
-    * -------Testing-------
-    * ---------------------
-    */
-
-    //Open test dataset
-    ifstream testDataStream;
-	testDataStream.open(testDataset.c_str());
-	
-	//Verify file is open
-	if(!testDataStream.is_open()) {
-		throw runtime_error("Unable to open File 2");
-	} else {
-        cout << "File 2 Opened" << endl;
-    }
-
+    //Predict
+    ifstream testDataStream = openFile(testDataset);
     analyzer.predict(testDataStream);
-    
     testDataStream.close();
 
-    /*
-    * ---------------------
-    * ------Analyzing------
-    * ---------------------
-    */
-
-    //Open ground truth dataset
-    ifstream truthDataStream;
-	truthDataStream.open(testDatasetTruth.c_str());
-	
-	//Verify file is open
-	if(!truthDataStream.is_open()) {
-		throw runtime_error("Unable to open File 3");
-	}
-
+    //Evaluate predictions
+    ifstream truthDataStream = openFile(testDatasetTruth);
     analyzer.evaluatePredictions(truthDataStream);
-    
     truthDataStream.close();
 
     return 0;
+}
+
+ifstream openFile(DSString filename) {
+    ifstream file;
+    file.open(filename.c_str());
+    if(!file.is_open()) {
+        throw runtime_error("Unable to open File");
+    }
+    return file;
 }
