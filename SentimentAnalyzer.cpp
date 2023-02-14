@@ -71,13 +71,6 @@ void SentimentAnalyzer::train(std::istream &trainingData)
             trainingTokenCount++;
         }
     }
-    for (auto TrainingToken : trainingTokens)
-    {
-        if (TrainingToken.second.getSentiment() == POSTIVE)
-        {
-            std::cout << TrainingToken.first << '\n';
-        }
-    }
 
     std::cout << "Training... Done" << std::endl;
     std::cout << "Total Number of Training Tokens: " << trainingTokenCount
@@ -150,8 +143,6 @@ void SentimentAnalyzer::predict(std::istream &tweetStream)
                 // That way it can be used in future Tweets
             }
         }
-        // TODO: Debug Statement, should be removed
-        // std::cout << Tweet << '\n' << sentimentVal << '\n' << std::endl;
 
         // Record predicted sentiment
         if (sentimentVal > 0)
@@ -198,8 +189,6 @@ void SentimentAnalyzer::evaluatePredictions(std::istream &truthStream)
         DSString sentimentstr, id;
         getline(ss, sentimentstr, ',');
         getline(ss, id, '\r');
-        // TODO: Debug Stmt, can be removed from finalized project
-        // std::cout << "Evaluating: " << id << " Sentiment: " << sentimentstr;
 
         // Get Sentiment
         Sentiment sentiment;
@@ -276,11 +265,19 @@ std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr)
             {
                 if(i + 1 < tokens.size())
                 {
-                    tokens[i + 1].negated = true;
+                    auto& token = tokens[i + 1];
+                    token.negated = true;
                 }
             }
         }
     }
+
+    for(auto token : tokens)
+    {
+        std::cout << token.value << " ";
+    }
+
+    std::cout << std::endl;
 
     return tokens;
 }
