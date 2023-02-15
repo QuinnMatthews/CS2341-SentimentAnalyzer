@@ -1,21 +1,19 @@
-#include <iostream>
-#include <fstream>
-#include "SentimentAnalyzer.h"
 #include "DSString.h"
+#include "SentimentAnalyzer.h"
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 
 ifstream openFile(DSString filename);
 
-int main(int argc, char** argv)
-{  
+int main(int argc, char** argv) {
     DSString trainingDataset, testDataset, testDatasetTruth;
-    if(argc == 1) {
+    if (argc == 1) {
         trainingDataset = "data/train_dataset_20k.csv";
         testDataset = "data/test_dataset_10k.csv";
         testDatasetTruth = "data/test_dataset_sentiment_10k.csv";
-    }
-    else if(argc != 4) {
+    } else if (argc != 4) {
         cout << "Usage: ./sentiment <training dataset> <test dataset> <test dataset truth>" << endl;
         return 0;
     } else {
@@ -47,7 +45,7 @@ int main(int argc, char** argv)
 ifstream openFile(DSString filename) {
     ifstream file;
     file.open(filename.c_str());
-    if(!file.is_open()) {
+    if (!file.is_open()) {
         throw runtime_error("Unable to open File");
     }
     return file;

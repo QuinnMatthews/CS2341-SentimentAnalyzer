@@ -1,13 +1,12 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <sstream>
 #include "DSString.h"
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <vector>
 
 using namespace std;
 
-int main()
-{  
+int main() {
     DSString myString = "Hello, World!";
     cout << myString << endl;
 
@@ -24,17 +23,12 @@ int main()
     cout << (a == b) << endl;
 
     // use initialization list (see DSVector.h)
-    vector<DSString> strings = {
-        DSString("bbb"),
-        DSString("aaa"),
-        DSString("ddd"),
-        DSString("eee"),
-        DSString("ccc")};
+    vector<DSString> strings
+        = { DSString("bbb"), DSString("aaa"), DSString("ddd"), DSString("eee"), DSString("ccc") };
 
     // find strings
-    for (const auto &s : strings)
-        cout
-            << s << "\n";
+    for (const auto& s : strings)
+        cout << s << "\n";
 
     cout << "found ddd: " << (find(strings.begin(), strings.end(), DSString("ddd")) != strings.end()) << endl;
     cout << "found zzz: " << (find(strings.begin(), strings.end(), DSString("zzz")) != strings.end()) << endl;
@@ -42,9 +36,8 @@ int main()
     // sorting
     sort(strings.begin(), strings.end());
 
-    for (const auto &s : strings)
-        cout
-            << s << "\n";
+    for (const auto& s : strings)
+        cout << s << "\n";
 
     // now we can do more efficient search
     cout << "found ddd: " << binary_search(strings.begin(), strings.end(), DSString("ddd")) << endl;

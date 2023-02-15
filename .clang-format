@@ -1,0 +1,8 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: WebKit
+BreakBeforeBraces: Attach
+ColumnLimit: 110
+ReflowComments: false
+SpaceAfterCStyleCast: true
+...

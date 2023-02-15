@@ -1,12 +1,10 @@
 #include "SentimentAnalyzer.h"
 
-void SentimentAnalyzer::train(std::istream &trainingData)
-{
+void SentimentAnalyzer::train(std::istream& trainingData) {
     std::cout << "Training..." << std::endl;
     DSString line;
     getline(trainingData, line); // Skip first line
-    while (getline(trainingData, line))
-    {
+    while (getline(trainingData, line)) {
         // line CSV format: Sentiment,id,Date,Query,User,Tweet
         std::stringstream ss(line.c_str());
         DSString sentimentstr, id, date, query, user, tweet;
@@ -15,16 +13,11 @@ void SentimentAnalyzer::train(std::istream &trainingData)
         getline(ss, sentimentstr, ',');
         Sentiment sentiment;
 
-        if (sentimentstr == "4")
-        {
+        if (sentimentstr == "4") {
             sentiment = POSTIVE;
-        }
-        else if (sentimentstr == "0")
-        {
+        } else if (sentimentstr == "0") {
             sentiment = NEGATIVE;
-        }
-        else
-        {
+        } else {
             sentiment = NUETRAL;
         }
 
@@ -41,31 +34,24 @@ void SentimentAnalyzer::train(std::istream &trainingData)
         std::vector<Token> tokens = tokenizeTweet(tweet.c_str());
 
         // Inset training tokens
-        for (auto token : tokens)
-        {
+        for (auto token : tokens) {
             Sentiment _sentiment = sentiment;
-            //If token is negated, flip sentiment
-            if (token.negated)
-            {
-                if (_sentiment == POSTIVE)
-                {
+            // If token is negated, flip sentiment
+            if (token.negated) {
+                if (_sentiment == POSTIVE) {
                     _sentiment = NEGATIVE;
-                }
-                else if (_sentiment == NEGATIVE)
-                {
+                } else if (_sentiment == NEGATIVE) {
                     _sentiment = POSTIVE;
                 }
             }
 
-            if (trainingTokens.find(token.value) != trainingTokens.end())
-            {
+            if (trainingTokens.find(token.value) != trainingTokens.end()) {
                 // Token already exists, add training data
                 trainingTokens[token.value].addTrainingData(_sentiment);
-            }
-            else
-            {
+            } else {
                 // Token does not exist yet
-                trainingTokens.insert(std::pair<DSString, SentimentValue>(token.value, SentimentValue(_sentiment)));
+                trainingTokens.insert(
+                    std::pair<DSString, SentimentValue>(token.value, SentimentValue(_sentiment)));
             }
 
             trainingTokenCount++;
@@ -73,19 +59,17 @@ void SentimentAnalyzer::train(std::istream &trainingData)
     }
 
     std::cout << "Training... Done" << std::endl;
-    std::cout << "Total Number of Training Tokens: " << trainingTokenCount
-              << " (" << trainingTokens.size() << " unique values)" << std::endl;
+    std::cout << "Total Number of Training Tokens: " << trainingTokenCount << " (" << trainingTokens.size()
+              << " unique values)" << std::endl;
 }
 
-void SentimentAnalyzer::predict(std::istream &tweetStream)
-{
+void SentimentAnalyzer::predict(std::istream& tweetStream) {
     std::cout << "Predicting..." << std::endl;
 
     // Read in data
     DSString line;
-    getline(tweetStream, line);        // Skip first line
-    while (getline(tweetStream, line)) // For each Tweet
-    {
+    getline(tweetStream, line); // Skip first line
+    while (getline(tweetStream, line)) { // For each Tweet
         double sentimentVal = 0;
         // line CSV format: id,Date,Query,User,Tweet
         std::stringstream ss(line.c_str());
@@ -103,69 +87,49 @@ void SentimentAnalyzer::predict(std::istream &tweetStream)
         // Tokenize tweet
         std::vector<Token> tokens = tokenizeTweet(Tweet);
 
-        for (auto token : tokens)
-        {
+        for (auto token : tokens) {
             // Check if token exists
-            if (trainingTokens.find(token.value) != trainingTokens.end())
-            {
-                // Token exists, add to sentiment value
-                Sentiment sentiment = trainingTokens[token.value].getSentiment();
-                double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
-                
-                //If negation, flip sentiment
-                if (token.negated)
-                {
-                    if (sentiment == POSTIVE)
-                    {
-                        sentiment = NEGATIVE;
-                    }
-                    else if (sentiment == NEGATIVE)
-                    {
-                        sentiment = POSTIVE;
-                    }
-                }
+            if (trainingTokens.find(token.value) == trainingTokens.end()) {
+                // Token does not exist, skip
+                continue;
+            }
 
-                if (sentiment == POSTIVE)
-                {
-                    // Add postive confidence to sentiment value
-                    sentimentVal += confidence;
-                }
-                else if (sentiment == NEGATIVE)
-                {
-                    // Add negative confidence to sentiment value
-                    sentimentVal -= confidence;
+            Sentiment sentiment = trainingTokens[token.value].getSentiment();
+            double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
+
+            // If negation, flip sentiment
+            if (token.negated) {
+                if (sentiment == POSTIVE) {
+                    sentiment = NEGATIVE;
+                } else if (sentiment == NEGATIVE) {
+                    sentiment = POSTIVE;
                 }
             }
-            else
-            {
-                // TODO: (maybe) Token does not exist, should we do anything?
-                // Maybe add to our training tokens with an inferred sentiment based on context within the tweet
-                // That way it can be used in future Tweets
+
+            if (sentiment == POSTIVE) {
+                // Add postive confidence to sentiment value
+                sentimentVal += confidence;
+            } else if (sentiment == NEGATIVE) {
+                // Add negative confidence to sentiment value
+                sentimentVal -= confidence;
             }
         }
 
         // Record predicted sentiment
-        if (sentimentVal > 0)
-        {
+        if (sentimentVal > 0) {
             // Positive
             tweets.insert(std::pair<DSString, Sentiment>(id, POSTIVE));
-        }
-        else if (sentimentVal < 0)
-        {
+        } else if (sentimentVal < 0) {
             // Negative
             tweets.insert(std::pair<DSString, Sentiment>(id, NEGATIVE));
-        }
-        else
-        {
-            // Nuetral
-            // We should probably just guess? Seems to be more likely to be Positive
-            if (tokens.size() == 1 && Tweet.at(0) == '@')
-            {
-                // Only 1 token that appears to be tagging someone else, seems slightly more likely to be neg
+        } else {
+            // Nuetral - Basically just guessing, ~9% of tweets reach this point
+            if (tokens.size() == 1 && Tweet.at(0) == '@') {
+                // Only 1 token that appears to be tagging someone else
+                // In real world this would likely be nuetral but in this
+                // case seems slightly more likely to be negative
                 tweets.insert(std::pair<DSString, Sentiment>(id, NEGATIVE));
-            }
-            else
-            {
+            } else {
                 tweets.insert(std::pair<DSString, Sentiment>(id, POSTIVE));
             }
         }
@@ -174,15 +138,13 @@ void SentimentAnalyzer::predict(std::istream &tweetStream)
     std::cout << "Total Predictions Made: " << tweets.size() << std::endl;
 }
 
-void SentimentAnalyzer::evaluatePredictions(std::istream &truthStream)
-{
+void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream) {
     int correctCount = 0;
     int totalCount = 0;
     // Read in data
     DSString line;
     getline(truthStream, line); // Skip first line
-    while (getline(truthStream, line))
-    {
+    while (getline(truthStream, line)) {
         // line CSV format: sentiment,id
         std::stringstream ss(line.c_str());
 
@@ -192,60 +154,44 @@ void SentimentAnalyzer::evaluatePredictions(std::istream &truthStream)
 
         // Get Sentiment
         Sentiment sentiment;
-        if (sentimentstr == "4")
-        {
+        if (sentimentstr == "4") {
             sentiment = POSTIVE;
-        }
-        else if (sentimentstr == "0")
-        {
+        } else if (sentimentstr == "0") {
             sentiment = NEGATIVE;
-        }
-        else
-        {
+        } else {
             sentiment = NUETRAL;
         }
 
         // Check if tweet exists
-        if (tweets.find(id) != tweets.end())
-        {
+        if (tweets.find(id) != tweets.end()) {
             // Tweet exists, check if sentiment matches
-            if (tweets[id] == sentiment)
-            {
-                // Sentiment matches, add to correct count
+            if (tweets[id] == sentiment) {
+                // Sentiment matches
                 correctCount++;
-                // TODO: Debug Stmt, can be removed from finalized project
-                // std::cout << " Correct!" << std::endl;
+            } else {
+                // Sentiment does not match
             }
-            else
-            {
-                // TODO: Debug Stmt, can be removed from finalized project
-                // std::cout << " Incorrect!" << std::endl;
-            }
+
             // Add to total count
             totalCount++;
-        }
-        else
-        {
+        } else {
             // Tweet was never analyzed, this probably shouldn't happen
             std::cout << "Tweet " << id << " was not analyzed" << std::endl;
         }
     }
-    std::cout << "Accuracy: " << (double)correctCount / (double)totalCount << std::endl;
+    std::cout << "Accuracy: " << (double) correctCount / (double) totalCount << std::endl;
 }
 
-std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr)
-{
+std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr) {
     std::stringstream tweet_ss(tweetstr.c_str());
     DSString tokenstr;
     std::vector<Token> tokens;
-    while (getline(tweet_ss, tokenstr, ' '))
-    {
+    while (getline(tweet_ss, tokenstr, ' ')) {
         // Sanitize token
         tokenstr = sanitizeWord(tokenstr);
 
         // Skip empty tokens
-        if (tokenstr.length() == 0)
-        {
+        if (tokenstr.length() == 0) {
             continue;
         }
 
@@ -253,18 +199,14 @@ std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr)
         std::vector<DSString> expandedTokens = expandContraction(tokenstr);
 
         // Stem token(s) and add to list
-        for (auto expandedToken : expandedTokens)
-        {
-            tokens.push_back(Token{stemWord(expandedToken)});
+        for (auto expandedToken : expandedTokens) {
+            tokens.push_back(Token { stemWord(expandedToken) });
         }
 
-        //Check for negations
-        for(size_t i = 0; i < tokens.size(); i++)
-        {
-            if(tokens[i].value == "not" || tokens[i].value == "no")
-            {
-                if(i + 1 < tokens.size())
-                {
+        // Check for negations
+        for (size_t i = 0; i < tokens.size(); i++) {
+            if (tokens[i].value == "not" || tokens[i].value == "no") {
+                if (i + 1 < tokens.size()) {
                     auto& token = tokens[i + 1];
                     token.negated = true;
                 }
@@ -272,20 +214,11 @@ std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr)
         }
     }
 
-    for(auto token : tokens)
-    {
-        std::cout << token.value << " ";
-    }
-
-    std::cout << std::endl;
-
     return tokens;
 }
 
-DSString SentimentAnalyzer::sanitizeWord(DSString tokenstr)
-{
-    if (tokenstr.length() == 0)
-    {
+DSString SentimentAnalyzer::sanitizeWord(DSString tokenstr) {
+    if (tokenstr.length() == 0) {
         return "";
     }
 
@@ -293,20 +226,16 @@ DSString SentimentAnalyzer::sanitizeWord(DSString tokenstr)
     tokenstr = tokenstr.toLower();
 
     // Reduce to just letters and apostrophes
-    for (size_t i = 0; i < tokenstr.length(); i++)
-    {
-        if (!isalpha(tokenstr[i]) && tokenstr[i] != '\'')
-        {
+    for (size_t i = 0; i < tokenstr.length(); i++) {
+        if (!isalpha(tokenstr[i]) && tokenstr[i] != '\'') {
             tokenstr.remove(i);
             i--;
         }
     }
 
     // Reduce 3+ duplicate letters to single letter
-    for (size_t i = 1; i < tokenstr.length(); i++)
-    {
-        if (i > 1 && tokenstr.at(i) == tokenstr.at(i - 1) && tokenstr.at(i) == tokenstr.at(i - 2))
-        {
+    for (size_t i = 1; i < tokenstr.length(); i++) {
+        if (i > 1 && tokenstr.at(i) == tokenstr.at(i - 1) && tokenstr.at(i) == tokenstr.at(i - 2)) {
             tokenstr.remove(i);
             tokenstr.remove(i - 1);
             i -= 2;
@@ -316,33 +245,29 @@ DSString SentimentAnalyzer::sanitizeWord(DSString tokenstr)
     return tokenstr;
 }
 
-std::vector<DSString> SentimentAnalyzer::expandContraction(DSString tokenstr)
-{
-    std::map<DSString, DSString> contractions{
+std::vector<DSString> SentimentAnalyzer::expandContraction(DSString tokenstr) {
+    std::map<DSString, DSString> contractions {
 #include "contractions.data"
     };
 
-    if (contractions.find(tokenstr) != contractions.end())
-    {
+    if (contractions.find(tokenstr) != contractions.end()) {
         DSString expanded = contractions[tokenstr];
 
         std::vector<DSString> tokens;
         std::stringstream ss(expanded.c_str());
 
         DSString token;
-        while (getline(ss, token, ' '))
-        {
+        while (getline(ss, token, ' ')) {
             tokens.push_back(token);
         }
 
         return tokens;
     }
 
-    return std::vector<DSString>({tokenstr});
+    return std::vector<DSString>({ tokenstr });
 }
 
-DSString SentimentAnalyzer::stemWord(DSString tokenstr)
-{
+DSString SentimentAnalyzer::stemWord(DSString tokenstr) {
     // Convert char[] to wchar_t[]
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::wstring tokenwstr_tmp = converter.from_bytes(tokenstr.string());

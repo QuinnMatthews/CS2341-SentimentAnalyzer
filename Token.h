@@ -3,8 +3,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-struct Token
-{
+struct Token {
     DSString value;
     bool negated;
 };

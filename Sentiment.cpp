@@ -29,7 +29,7 @@ Sentiment SentimentValue::getSentiment() {
 
     //Divide by 0 error shouldn't be possible since SentimentValue will always be initialized with a sentiment
     const double posPercent = (double) posCount / (posCount + negCount);
-    const double negPercent = (double) negCount / (posCount + negCount); 
+    const double negPercent = (double) negCount / (posCount + negCount);
 
     if (posPercent > 0.5 + minDeviation) {
         return POSTIVE;
@@ -38,17 +38,16 @@ Sentiment SentimentValue::getSentiment() {
     } else {
         return NUETRAL;
     }
-} 
+}
 
 double SentimentValue::getConfidence(int totalTokens) {
     Sentiment sentiment = getSentiment();
 
-    if(sentiment == POSTIVE) {
-        return ((double) (posCount-negCount) / totalTokens) * 1000;
+    if (sentiment == POSTIVE) {
+        return ((double) (posCount - negCount) / totalTokens) * 1000;
     } else if (sentiment == NEGATIVE) {
-        return ((double) (negCount-posCount) / totalTokens) * 1000;
+        return ((double) (negCount - posCount) / totalTokens) * 1000;
     } else {
         return 0;
     }
 }
-
