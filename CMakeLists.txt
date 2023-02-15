@@ -35,8 +35,5 @@ add_executable(sentiment main.cpp DSString.cpp SentimentAnalyzer.cpp Sentiment.c
 
 add_executable(test_DSString test_DSString.cpp DSString.cpp)
 
-add_executable(test_DSWString test_DSWString.cpp DSWString.cpp)
-
-
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
