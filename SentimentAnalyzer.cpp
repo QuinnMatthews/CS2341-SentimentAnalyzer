@@ -200,7 +200,7 @@ std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr) {
 
         // Stem token(s) and add to list
         for (auto expandedToken : expandedTokens) {
-            tokens.push_back(Token { stemWord(expandedToken) });
+            tokens.push_back(Token { stemWord(expandedToken), false });
         }
 
         // Check for negations
