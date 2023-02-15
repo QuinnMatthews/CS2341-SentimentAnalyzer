@@ -15,21 +15,21 @@
 class SentimentAnalyzer {
 private:
     std::map<DSString, SentimentValue> trainingTokens; //<TokenString, SentimentValue>
-    size_t trainingTokenCount; //Total number of tokens that have been read in
+    size_t trainingTokenCount; // Total number of tokens that have been read in
     std::map<DSString, Sentiment> tweets; //<TweetID, PredictedTweetSentiment>
 
     std::map<DSString, DSString> contractions; //<Contraction, Meaning>
 
-    //Returns a list of tokenized words
+    // Returns a list of tokenized words
     static std::vector<Token> tokenizeTweet(DSString tweetstr);
 
-    //Returns a sanitized/tokenized version of a word
+    // Returns a sanitized/tokenized version of a word
     static DSString sanitizeWord(DSString tokenstr);
 
-    //Check if a token is a contraction and returns a vector of the expanded tokens
+    // Check if a token is a contraction and returns a vector of the expanded tokens
     static std::vector<DSString> expandContraction(DSString tokenstr);
 
-    //Stem a word
+    // Stem a word
     static DSString stemWord(DSString tokenstr);
 
 public:

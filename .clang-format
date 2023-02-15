@@ -3,6 +3,6 @@
 BasedOnStyle: WebKit
 BreakBeforeBraces: Attach
 ColumnLimit: 110
-ReflowComments: false
+ReflowComments: true
 SpaceAfterCStyleCast: true
 ...

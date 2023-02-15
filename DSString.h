@@ -59,14 +59,14 @@ public:
      *
      * @param start the index of where to start
      * @param numChars the number (count) of characters to copy into the substring
-     * 
+     *
      * @return a DSString object containing the requested substring
      **/
     DSString substring(size_t start, size_t numChars) const;
 
     /**
      * @brief Remove the char at the specified index
-     * 
+     *
      * @param index of the char to remove
      */
     void remove(size_t index);
@@ -80,15 +80,15 @@ public:
 
     /**
      * @brief Returns a pointer to a null-terminated c-string holding the contents of this object
-     * 
+     *
      * @return char*
-    */
+     */
     char* c_str() const;
 
     /**
      * @brief Returns a std::string object with the same contents as this DSString
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string string() const;
 
@@ -104,36 +104,36 @@ public:
 
     /**
      * @brief Finds the first occurrence of the given substring
-     * 
+     *
      * @param str The substring to search for
      * @param start The index to start searching from
      * @return size_t The index of the first occurrence of the substring or npos if not found
-     * 
-    */
+     *
+     */
     size_t find(const DSString&, size_t start = 0);
 
     /**
      * @brief Finds the first occurrence of the given substring
-     * 
+     *
      * @param str The cstring to search for (must be null terminated)
      * @param start The index to start searching from
      * @return size_t The index of the first occurrence of the substring or npos if not found
-     * 
-    */
+     *
+     */
     size_t find(const char*, size_t start = 0);
 
     /**
      * @brief Finds the first occurrence of the given character
-     * 
+     *
      * @param c The character to search for
      * @param start The index to start searching from
      * @return size_t The index of the first occurrence of the char or npos if not found
-     * 
-    */
+     *
+     */
     size_t find(char, size_t start = 0);
 
-    //Constant to represent the maximum size of a string
-    //Also used to represent that no match was found
+    // Constant to represent the maximum size of a string
+    // Also used to represent that no match was found
     static const size_t npos = -1;
 };
 

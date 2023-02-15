@@ -28,8 +28,8 @@ Sentiment SentimentValue::getSentiment() {
         return NUETRAL;
     }
 
-    //Check if postive count and negative count are close
-    const double minDeviation = 0.15; //Required deviation to not be nuetral
+    // Check if postive count and negative count are close
+    const double minDeviation = 0.15; // Required deviation to not be nuetral
     const double posPercent = (double) posCount / (posCount + negCount);
     const double negPercent = (double) negCount / (posCount + negCount);
 
