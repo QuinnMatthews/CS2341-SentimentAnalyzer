@@ -4,6 +4,7 @@
 #include "Token.h"
 #include <codecvt>
 #include <iostream>
+#include <iomanip>
 #include <locale>
 #include <map>
 #include <sstream>
@@ -14,9 +15,9 @@
 
 class SentimentAnalyzer {
 private:
-    std::map<DSString, SentimentValue> trainingTokens; //<TokenString, SentimentValue>
+    std::map<DSString, Sentiment> trainingTokens; //<TokenString, Sentiment>
     size_t trainingTokenCount; // Total number of tokens that have been read in
-    std::map<DSString, Sentiment> tweets; //<TweetID, PredictedTweetSentiment>
+    std::map<DSString, SentimentValue> tweets; //<TweetID, PredictedTweetSentiment>
 
     std::map<DSString, DSString> contractions; //<Contraction, Meaning>
 
@@ -26,16 +27,13 @@ private:
     // Returns a sanitized/tokenized version of a word
     static DSString sanitizeWord(DSString tokenstr);
 
-    // Check if a token is a contraction and returns a vector of the expanded tokens
-    static std::vector<DSString> expandContraction(DSString tokenstr);
-
     // Stem a word
     static DSString stemWord(DSString tokenstr);
 
 public:
     void train(std::istream&);
-    void predict(std::istream&);
-    void evaluatePredictions(std::istream&);
+    void predict(std::istream&, std::ostream&);
+    void evaluatePredictions(std::istream&, std::ostream&);
 };
 
 #endif

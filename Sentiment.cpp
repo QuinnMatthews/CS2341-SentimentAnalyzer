@@ -1,8 +1,8 @@
 #include "Sentiment.h"
 
-SentimentValue::SentimentValue() = default;
+Sentiment::Sentiment() = default;
 
-SentimentValue::SentimentValue(Sentiment s) {
+Sentiment::Sentiment(SentimentValue s) {
     if (s == POSTIVE) {
         posCount = 1;
         negCount = 0;
@@ -15,7 +15,7 @@ SentimentValue::SentimentValue(Sentiment s) {
     }
 }
 
-void SentimentValue::addTrainingData(Sentiment s) {
+void Sentiment::addTrainingData(SentimentValue s) {
     if (s == POSTIVE) {
         posCount++;
     } else if (s == NEGATIVE) {
@@ -23,7 +23,7 @@ void SentimentValue::addTrainingData(Sentiment s) {
     }
 }
 
-Sentiment SentimentValue::getSentiment() {
+SentimentValue Sentiment::getSentiment() {
     if (posCount == 0 && negCount == 0) {
         return NUETRAL;
     }
@@ -42,8 +42,8 @@ Sentiment SentimentValue::getSentiment() {
     }
 }
 
-double SentimentValue::getConfidence(int totalTokens) {
-    Sentiment sentiment = getSentiment();
+double Sentiment::getConfidence(int totalTokens) {
+    SentimentValue sentiment = getSentiment();
 
     if (sentiment == POSTIVE) {
         return ((double) (posCount - negCount) / totalTokens) * 1000;
@@ -51,5 +51,15 @@ double SentimentValue::getConfidence(int totalTokens) {
         return ((double) (negCount - posCount) / totalTokens) * 1000;
     } else {
         return 0;
+    }
+}
+
+SentimentValue Sentiment::negateSentiment(SentimentValue sentiment) {
+    if(sentiment == POSTIVE) {
+        return NEGATIVE;
+    } else if(sentiment == NEGATIVE) {
+        return POSTIVE;
+    } else {
+        return NUETRAL;
     }
 }

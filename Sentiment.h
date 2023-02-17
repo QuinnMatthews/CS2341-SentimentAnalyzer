@@ -4,19 +4,21 @@
 #ifndef SENTIMENT_H
 #define SENTIMENT_H
 
-enum Sentiment { POSTIVE, NEGATIVE, NUETRAL };
+enum SentimentValue { POSTIVE = 4, NEGATIVE = 0, NUETRAL = 2 };
 
-class SentimentValue {
+class Sentiment {
 private:
     unsigned int posCount;
     unsigned int negCount;
 
 public:
-    SentimentValue();
-    SentimentValue(Sentiment);
-    void addTrainingData(Sentiment);
-    Sentiment getSentiment();
+    Sentiment();
+    Sentiment(SentimentValue);
+    void addTrainingData(SentimentValue);
+    SentimentValue getSentiment();
     double getConfidence(int c);
+
+    static SentimentValue negateSentiment(SentimentValue);
 };
 
 #endif
