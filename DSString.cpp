@@ -215,12 +215,10 @@ bool DSString::operator!=(const DSString& rhs) const {
 }
 
 bool DSString::operator<=(const DSString& rhs) const {
-    // TODO: This would probably be more efficient if we checked this ourselves
     return this->operator<(rhs) || this->operator==(rhs);
 }
 
 bool DSString::operator>=(const DSString& rhs) const {
-    // TODO: This would probably be more efficient if we checked this ourselves
     return this->operator>(rhs) || this->operator==(rhs);
 }
 

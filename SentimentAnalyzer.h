@@ -19,7 +19,8 @@ private:
     size_t trainingTokenCount; // Total number of tokens that have been read in
     std::map<DSString, SentimentValue> tweets; //<TweetID, PredictedTweetSentiment>
 
-    std::map<DSString, DSString> contractions; //<Contraction, Meaning>
+    // Analyzes a specific string to determine sentiment
+    SentimentValue predictString(const DSString&);
 
     // Returns a list of tokenized words
     static std::vector<Token> tokenizeTweet(DSString tweetstr);

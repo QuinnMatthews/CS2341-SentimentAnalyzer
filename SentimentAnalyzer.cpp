@@ -83,39 +83,10 @@ void SentimentAnalyzer::predict(std::istream& tweetStream, std::ostream& outputS
         // Get Tweet
         getline(ss, Tweet);
 
-        // Tokenize tweet
-        std::vector<Token> tokens = tokenizeTweet(Tweet);
+        // Analyze Tweet sentiment 
+        SentimentValue tweetSentiment = predictString(Tweet);
 
-        for (auto token : tokens) {
-            // Check if token exists
-            if (trainingTokens.find(token.value) == trainingTokens.end()) {
-                // Token does not exist, skip
-                continue;
-            }
-
-            SentimentValue sentiment = trainingTokens[token.value].getSentiment();
-            double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
-
-            // If negation, flip sentiment
-            if (token.negated) {
-                sentiment = Sentiment::negateSentiment(sentiment);
-            }
-
-            //TODO: Should we have seperate values and do someting similar to what we do
-            //      inside the getSentiment method?
-            if (sentiment == POSTIVE) {
-                // Add postive confidence to sentiment value
-                sentimentVal += confidence;
-            } else if (sentiment == NEGATIVE) {
-                // Add negative confidence to sentiment value
-                sentimentVal -= confidence;
-            }
-        }
-
-        SentimentValue tweetSentiment;
-
-        tweetSentiment = (sentimentVal < 0) ? NEGATIVE : POSTIVE;
-
+        // Store/Output Sentiment 
         tweets.insert(std::pair<DSString, SentimentValue>(id, tweetSentiment));
         outputStream << tweetSentiment << ", " << id << '\n';
     }
@@ -180,6 +151,37 @@ void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream, std::ostr
             << '\n';
     }
     outputStream << std::flush;
+}
+
+SentimentValue SentimentAnalyzer::predictString(const DSString& str) {
+        double sentimentVal = 0;
+
+        // Tokenize string
+        std::vector<Token> tokens = tokenizeTweet(str);
+
+        for (auto token : tokens) {
+            // Check if token exists
+            if (trainingTokens.find(token.value) == trainingTokens.end()) {
+                // Token does not exist, skip
+                continue;
+            }
+
+            SentimentValue sentiment = trainingTokens[token.value].getSentiment();
+            double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
+
+            // If negation, flip sentiment
+            if (token.negated) {
+                sentiment = Sentiment::negateSentiment(sentiment);
+            }
+
+            if (sentiment == POSTIVE) {
+                sentimentVal += confidence;
+            } else if (sentiment == NEGATIVE) {
+                sentimentVal -= confidence;
+            }
+        }
+
+        return (sentimentVal < 0) ? NEGATIVE : POSTIVE;
 }
 
 std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr) {
