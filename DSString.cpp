@@ -303,7 +303,10 @@ DSString DSString::toLower() const {
         }
     }
 
-    return DSString(newData);
+    DSString newString = DSString(newData);
+    delete[] newData;
+
+    return newString;
 }
 
 /**
