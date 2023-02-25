@@ -23,13 +23,12 @@ void Sentiment::addTrainingData(SentimentValue s) {
     }
 }
 
-SentimentValue Sentiment::getSentiment() {
+SentimentValue Sentiment::getSentiment(const double& minDeviation) {
     if (posCount == 0 && negCount == 0) {
         return NUETRAL;
     }
 
     // Check if postive count and negative count are close
-    const double minDeviation = 0.15; // Required deviation to not be nuetral
     const double posPercent = (double) posCount / (posCount + negCount);
     const double negPercent = (double) negCount / (posCount + negCount);
 
@@ -43,15 +42,8 @@ SentimentValue Sentiment::getSentiment() {
 }
 
 double Sentiment::getConfidence(int totalTokens) {
-    SentimentValue sentiment = getSentiment();
-
-    if (sentiment == POSTIVE) {
-        return ((double) (posCount - negCount) / totalTokens) * 1000;
-    } else if (sentiment == NEGATIVE) {
-        return ((double) (negCount - posCount) / totalTokens) * 1000;
-    } else {
-        return 0;
-    }
+    int diff = abs(posCount - negCount);
+    return (double) diff/totalTokens * 1000;
 }
 
 SentimentValue Sentiment::negateSentiment(SentimentValue sentiment) {

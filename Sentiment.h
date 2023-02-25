@@ -15,7 +15,7 @@ public:
     Sentiment();
     Sentiment(SentimentValue);
     void addTrainingData(SentimentValue);
-    SentimentValue getSentiment();
+    SentimentValue getSentiment(const double& minDeviation = 0.15);
     double getConfidence(int c);
 
     static SentimentValue negateSentiment(SentimentValue);

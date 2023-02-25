@@ -155,30 +155,34 @@ void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream, std::ostr
 
 SentimentValue SentimentAnalyzer::predictString(const DSString& str) {
         double sentimentVal = 0;
+        double minDeviation = 0.15;
 
         // Tokenize string
         std::vector<Token> tokens = tokenizeTweet(str);
 
-        for (auto token : tokens) {
-            // Check if token exists
-            if (trainingTokens.find(token.value) == trainingTokens.end()) {
-                // Token does not exist, skip
-                continue;
-            }
+        while(minDeviation >= 0.1 && sentimentVal == 0) {
+            for (auto token : tokens) {
+                // Check if token exists
+                if (trainingTokens.find(token.value) == trainingTokens.end()) {
+                    // Token does not exist, skip
+                    continue;
+                }
 
-            SentimentValue sentiment = trainingTokens[token.value].getSentiment();
-            double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
+                SentimentValue sentiment = trainingTokens[token.value].getSentiment(minDeviation);
+                double confidence = trainingTokens[token.value].getConfidence(trainingTokenCount);
 
-            // If negation, flip sentiment
-            if (token.negated) {
-                sentiment = Sentiment::negateSentiment(sentiment);
-            }
+                // If negation, flip sentiment
+                if (token.negated) {
+                    sentiment = Sentiment::negateSentiment(sentiment);
+                }
 
-            if (sentiment == POSTIVE) {
-                sentimentVal += confidence;
-            } else if (sentiment == NEGATIVE) {
-                sentimentVal -= confidence;
+                if (sentiment == POSTIVE) {
+                    sentimentVal += confidence;
+                } else if (sentiment == NEGATIVE) {
+                    sentimentVal -= confidence;
+                }
             }
+            minDeviation -= 0.001;
         }
 
         return (sentimentVal < 0) ? NEGATIVE : POSTIVE;
