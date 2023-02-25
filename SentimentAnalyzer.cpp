@@ -105,8 +105,10 @@ void SentimentAnalyzer::predict(std::istream& tweetStream, std::ostream& outputS
 void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream, std::ostream& outputStream) {
     int correctCount = 0;
     int totalCount = 0;
+
     // <Predicted SentimentValue, Correct SentimentValue, Id>
-    std::vector<std::tuple<SentimentValue, SentimentValue, DSString>> incorrectPredictions; 
+    std::vector<std::tuple<SentimentValue, SentimentValue, DSString>> incorrectPredictions;
+     
     // Read in data
     DSString line;
     getline(truthStream, line); // Skip first line
@@ -147,9 +149,13 @@ void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream, std::ostr
             std::cout << "Tweet " << id << " was not analyzed" << std::endl;
         }
     }
+
+    // Output accuracy
     double accuracy = (double) correctCount / totalCount;
     std::cout << "Accuracy: " << accuracy << std::endl;
     outputStream << std::fixed << std::setprecision(3) << accuracy << std::endl;
+
+    // Output incorrect predictions
     for(auto& incorrectPrediction : incorrectPredictions) {
         outputStream << std::get<0>(incorrectPrediction) << ", "
             << std::get<1>(incorrectPrediction) << ", "
