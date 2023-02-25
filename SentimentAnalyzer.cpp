@@ -83,10 +83,16 @@ void SentimentAnalyzer::predict(std::istream& tweetStream, std::ostream& outputS
         // Get Tweet
         getline(ss, Tweet);
 
+        if(tweets.find(id) != tweets.end()) {
+            std::cerr << "Warning duplicate Tweet: " << id << std::endl;
+            continue;
+        }
+
         // Analyze Tweet sentiment 
         SentimentValue tweetSentiment = predictString(Tweet);
 
         // Store/Output Sentiment 
+
         tweets.insert(std::pair<DSString, SentimentValue>(id, tweetSentiment));
         outputStream << tweetSentiment << ", " << id << '\n';
     }
