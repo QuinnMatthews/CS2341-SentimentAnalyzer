@@ -214,16 +214,16 @@ std::vector<Token> SentimentAnalyzer::tokenizeTweet(DSString tweetstr) {
         }
 
         tokens.push_back(Token { stemWord(tokenstr), false });
+    }
 
-        // Check for negations
-        for (size_t i = 0; i < tokens.size(); i++) {
-            const auto& val = tokens[i].value;
+    // Check for negations
+    for (size_t i = 0; i < tokens.size(); i++) {
+        const auto& val = tokens[i].value;
 
-            if (val == "not" || val == "no" || (val.length() > 3 && val.substring(val.length()-3, 3) == "n't")) {
-                if (i + 1 < tokens.size()) {
-                    auto& token = tokens[i + 1];
-                    token.negated = true;
-                }
+        if (val == "not" || val == "no" || (val.length() > 3 && val.substring(val.length()-3, 3) == "n't")) {
+            if (i + 1 < tokens.size()) {
+                auto& token = tokens[i + 1];
+                token.negated = true;
             }
         }
     }
