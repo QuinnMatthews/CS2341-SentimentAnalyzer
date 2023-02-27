@@ -69,7 +69,6 @@ void SentimentAnalyzer::predict(std::istream& tweetStream, std::ostream& outputS
     DSString line;
     getline(tweetStream, line); // Skip first line
     while (getline(tweetStream, line)) { // For each Tweet
-        double sentimentVal = 0;
         // line CSV format: id,Date,Query,User,Tweet
         std::stringstream ss(line.c_str());
         DSString id, Date, Query, User, Tweet;
@@ -108,7 +107,7 @@ void SentimentAnalyzer::evaluatePredictions(std::istream& truthStream, std::ostr
 
     // <Predicted SentimentValue, Correct SentimentValue, Id>
     std::vector<std::tuple<SentimentValue, SentimentValue, DSString>> incorrectPredictions;
-     
+
     // Read in data
     DSString line;
     getline(truthStream, line); // Skip first line
