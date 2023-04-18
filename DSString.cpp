@@ -90,6 +90,10 @@ DSString& DSString::operator=(const DSString& cpyFrm) {
 
 // move assignment operator
 DSString& DSString::operator=(DSString&& moveFrm) {
+    if(this == &moveFrm) {
+        return *this;
+    }
+    
     // Clean up old data
     delete[] data;
 
